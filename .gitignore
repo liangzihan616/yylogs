@@ -9,3 +9,14 @@ __pycache__/
 build/
 dist/
 .venv*/
+logs_research/
+runtime/
+vendor/
+outputs/
+exports/
+*.yylogs
+*.pcap
+*.pcapng
+*.exe
+*.zip
+.env*

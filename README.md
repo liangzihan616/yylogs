@@ -1,101 +1,69 @@
-# yylogs · 燕云十六声 PVE 战斗分析工具
+# yylogs · 燕云十六声 PVE 战斗复盘
 
-> 面向《燕云十六声》组队 PVE 的**本地离线战斗记录与复盘工具**：在一场副本战斗结束后，把这一场里发生的伤害、增益覆盖、Boss 状态和队友表现，整理成可回看、可对比的时间轴和报表。
+yylogs 是一个 Windows 桌面工具，用来复盘《燕云十六声》的组队 PVE 战斗。导入已保存的战斗记录后，可以查看队伍输出、技能明细、增益覆盖和 Boss 状态，并对照时间轴分析战斗的关键阶段。
 
-<p>
-  <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20x64-0a7d5a">
-  <img alt="ui" src="https://img.shields.io/badge/UI-Qt%20%2F%20PySide6-0a7d5a">
-  <img alt="mode" src="https://img.shields.io/badge/mode-local%20%C2%B7%20offline-555">
-  <img alt="status" src="https://img.shields.io/badge/status-active-0a7d5a">
-</p>
+本仓库是基于 **yylogs 1.51** 整理的**离线复盘版源码**。不包含实时采集、实时悬浮窗、抓包运行时、游戏进程读取工具或安装包。使用时无需启动游戏或授予管理员权限。本项目与游戏官方无关。
 
-## 这个程序是干什么的
+## 能看什么
 
-一场副本打得好不好，通常只能靠记忆和地面数字。yylogs 的定位是**战斗后的复盘工具**：
-
-1. 在你自己准备好之后**手动开始采集**（不会自动启动），战斗结束停止；
-2. 把这一场战斗里玩家实际造成的伤害、受到的治疗、自身增益的覆盖区间、Boss 的血量与真气变化、Boss 身上的减益状态，全部记录下来；
-3. 登录后以「战斗记录」的形式回看：总览、自身 Buff、Boss 状态、队员状态四个视角，任选时间区间对比。
-
-它只回答一类问题：**这场战斗里，谁在什么时间做了什么、状态如何变化。**
-它不是插件、不是外挂、不参与战斗操作，也不会替你做任何决策。
-
-## 主要功能
-
-| 模块 | 内容 |
+| 页面 | 内容 |
 | --- | --- |
-| 战斗记录 | 记录列表、改名、多选删除、日志包导入导出 |
-| 总览 | 队伍总伤害、观测用时、平均 DPS、成员排行、伤害占比、提供 RD |
-| 自身 Buff 观测 | 自己身上的增益/减益，按效果与 ID 分轨显示覆盖区间，支持按名称、Buff ID、来源搜索 |
-| Boss 状态观测 | Boss 血量 / 真气归一化曲线（同一时间轴），Boss Debuff 覆盖率与展开明细 |
-| 队员状态观测 | 单个队员的 DPS/HPS 曲线，可与 Boss 血量、真气叠加对照，定位高低区间 |
-| 技能明细 | 在 DPS 曲线上悬停，查看该秒内每个技能的秒伤、伤害与占比 |
-| 结算伤害 | 与游戏内结算面板核对的结算类伤害，单独归类、不重复计入总伤 |
-| RD 估算 | 按增伤 Buff 的**实际覆盖区间**内队友真实技能伤害估算“我提供了多少 RD”，不是套全场伤害的固定公式 |
+| 战斗总览 | 队伍总伤害、战斗时长、队员 DPS、伤害占比、流派与 rDPS 估算；点击成员查看技能明细 |
+| 队员 Buff 观测 | 按角色查看 Buff 覆盖区间和可识别来源 |
+| Boss 状态观测 | 切换观测实体，查看血量、真气和 Debuff；真气归零段以绿色表示 |
+| 队员状态观测 | 查看分段 DPS 和血量，对照 Boss 曲线定位爆发或断档 |
+| 玩家动作观测 | 查看已记录的动作顺序、起止时间和间隔 |
 
-## 界面预览
+## 从源码启动
 
-### 总览：队伍伤害与提供 RD
-![总览](docs/images/01-overview.png)
+在 Windows x64 安装 Python 3.12。下载或克隆仓库后，在仓库根目录打开 PowerShell：
 
-### 自身 Buff 观测：覆盖区间与来源
-![自身 Buff](docs/images/02-self-buff.png)
-
-### Boss 状态观测：血量 / 真气曲线 + Debuff 覆盖率
-![Boss 状态](docs/images/03-boss-status.png)
-
-### 队员状态观测：DPS 与 Boss 状态同轴对照
-![队员状态](docs/images/04-member-status.png)
-
-### 曲线悬停：这一秒打了什么技能
-![技能明细](docs/images/05-skill-detail.png)
-
-## 目录框架
-
-下面是目录框架；程序本体以安装包形式分发。
-
-```text
-yylogs/
-├─ docs/                 设计文档与界面图
-│  ├─ images/            界面截图
-│  ├─ architecture.md    模块划分与数据流
-│  └─ data-scope.md      数据口径、可核对项与不确定性说明
-├─ src/                  目录骨架（占位，无实现）
-│  ├─ capture/           采集层
-│  ├─ analysis/          解析与统计层
-│  ├─ ui/                界面层
-│  └─ resources/         名称/配置等静态资源
-├─ packaging/            打包与分发说明
-├─ README.md
-└─ LICENSE
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m yylogs.app
 ```
 
-各目录的职责边界见 [`docs/architecture.md`](docs/architecture.md)。
+首次启动没有内置战斗记录，列表为空是正常的。默认数据目录为 `%LOCALAPPDATA%\YYLOGS-Offline`，与原版记录分开。可在设置中选择保存目录，重启后生效，不会自动搬移旧数据。
 
-## 技术与实现概览
+## 怎样复盘
 
-- **平台**：Windows x64，单文件 EXE + 独立依赖安装包
-- **界面**：Qt（PySide6），浅色主题，图标为自绘 SVG 线性图标
-- **采集**：运行期只读观测，字段白名单，不写游戏内存、不调用游戏功能、不绕过保护
-- **数据**：全部保存在本机（`%LOCALAPPDATA%/YYLOGS`），不做云端上传
-- **分析**：离线流式统计，逐次事件 → 分段聚合 → 曲线/报表，可导出 CSV 与日志包
+1. 在已有记录的 yylogs 中选择一场战斗，通过「导出报告 → 战斗记录包」取得 `.yylogs` 文件。
+2. 在离线复盘版点击「导入日志包」，选择该文件。支持兼容的战斗记录 ZIP 或 JSON；CSV 是统计结果，不能作为日志包导回。
+3. 从左侧选择战斗，通过上方标签切换视图。点击总览里的队员可打开技能明细；使用时间区间筛选查看战斗片段。
+4. 需要分享或继续分析时，导出战斗记录包、JSON 或队伍统计 CSV。导出只写本地文件；分享前请检查角色名等信息。
 
-## 使用方式
+rDPS 是基于记录中可归属伤害与 Buff 覆盖的估算，并非官方结算。旧日志没有记录的字段可能留空，导入不能补回未保存的观测。
 
-1. 启动程序（不会自动开始采集）；
-2. 进入副本、准备就绪后点击开始采集；
-3. 战斗结束、采集停止后，到「战斗记录」里查看本场分析；
-4. 需要复盘或分享时，用「导出报告 / 导入日志包」传递记录。
+## 目录
 
-采集依赖本机环境与游戏版本，跨机器分发请使用安装包。
+| 路径 | 用途 |
+| --- | --- |
+| `yylogs/app.py`、`yylogs/ui_shell.py` | Qt 桌面入口、页面导航和战斗记录列表 |
+| `yylogs/battle_records.py`、`yylogs/data.py` | 本地档案校验、导入导出和列表加载 |
+| `yylogs/packet_records.py`、`yylogs/*_views.py` | 已保存记录的统计与图表；不捕获网络流量 |
+| `yylogs/resources/` | 离线分析所需的名称映射、规则和图标 |
+| `docs/images/` | 脱敏界面效果图 |
 
-## 已知限制
+## 界面效果
 
-- 只做**离线统计**，不是服务器权威数据；曲线存在采样间隔，缺口不补点、不插值；
-- 采集有容量上限，超长战斗可能被截断，界面会提示截断位置；
-- RD 为**估算值**：只在“能被观测并归属”的区间内累计，无法证明来源的部分不补造；
-- 未签名安装包，Windows 可能提示未知发布者。
+以下为原版效果图。离线复盘版保留这些战斗分析视图，不提供截图中的采集中心。
+
+### 战斗总览
+![战斗总览](docs/images/01-overview.png)
+
+### 队员 Buff 观测
+![队员 Buff 观测](docs/images/02-self-buff.png)
+
+### Boss 状态观测
+![Boss 状态观测](docs/images/03-boss-status.png)
+
+### 队员状态观测
+![队员状态观测](docs/images/04-member-status.png)
+
+### 玩家动作观测
+![玩家动作观测](docs/images/05-player-actions.png)
 
 ## 许可
 
-未经许可不得复制、分发或商用，详见 [LICENSE](LICENSE)。
+源码可查看，不代表授予再分发或商业使用许可。详见 [LICENSE](LICENSE)。图标的第三方许可见 [LICENSE.lucide](yylogs/resources/icons/LICENSE.lucide)。
